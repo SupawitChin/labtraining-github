@@ -1,0 +1,35 @@
+name: Action-workflow
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'input version'
+        default: 'latest'
+        required: true
+jobs:
+  prepare:
+    runs-on: self-hosted
+    steps: 
+      - name: Set tag on workflow despatch
+        if: github.even_name == 'workflow_dispatch'
+        run: echo "${{ github.even.inputs.version }}"
+
+  build: 
+    needs: prepare
+    runs-on: lab-dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: docker login
+        run: docker login -u supawitchinpa -p ${{ secrets.DECKER_PASS }}
+      - name: build and push
+        run: |
+          cd docker
+          docker build -t supawitchinpa/labgithub:${{ github.even.inputs.version }} .
+          docker push supawitchinpa/labgithub:${{ github.even.inputs.version }}
+  Deploy: 
+    needs: build
+    runs-on: lab-dev
+    steps:
+      - name: deploy container 
+        run:  docker run -d -p 8080:80 supawitchinpa/labgithub:${{ github.even.inputs.version }}
