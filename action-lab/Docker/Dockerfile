@@ -4,4 +4,3 @@ COPY . /action-lab/
 RUN npm install
 EXPOSE 8080
 CMD ["npm","start"]
-run -d --name 
