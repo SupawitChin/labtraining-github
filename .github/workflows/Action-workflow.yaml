@@ -25,11 +25,11 @@ jobs:
       - name: build and push
         run: |
           cd action-lab/Docker
-          docker build -t supawitchinpa/labgithub:${{ github.even.inputs.version }} .
-          docker push supawitchinpa/labgithub:${{ github.even.inputs.version }}
+          docker build -t supawitchinpa/labgithub:${{ github.event.inputs.version }} .
+          docker push supawitchinpa/labgithub:${{ github.event.inputs.version }}
   Deploy: 
     needs: build
     runs-on: self-hosted
     steps:
       - name: deploy container 
-        run:  docker run -d -p 8083:80 supawitchinpa/labgithub:${{ github.even.inputs.version }}
+        run:  docker run -d -p 8083:80 supawitchinpa/labgithub:${{ github.event.inputs.version }}
